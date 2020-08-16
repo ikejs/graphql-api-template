@@ -1,0 +1,26 @@
+{
+  "name": "graphql-api-template",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "start": "nodemon app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ikejs/graphql-api-template.git"
+  },
+  "author": "Ike Holzmann",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ikejs/graphql-api-template/issues"
+  },
+  "homepage": "https://github.com/ikejs/graphql-api-template#readme",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "express-graphql": "^0.11.0",
+    "graphql": "^15.3.0"
+  }
+}
