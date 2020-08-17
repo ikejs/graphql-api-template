@@ -3,6 +3,8 @@ const app = express();
 const bodyParser = require('body-parser');
 const { graphqlHTTP } = require('express-graphql');
 const { buildSchema } = require('graphql');
+const mongoose = require('mongoose');
+require('dotenv').config({ path: '.env' });
 
 app.use(bodyParser.json());
 
@@ -65,6 +67,9 @@ app.use(
 }));
 
 
-
-app.listen('8080', () => console.log('Server listening'));
-
+mongoose.connect(process.env.MONGODB_URI, { 
+	useNewUrlParser: true,
+	useUnifiedTopology: true
+}).then(() => {
+	app.listen('8080', () => console.log('Server listening'));	
+}).catch(err => console.log(err));
