@@ -16,9 +16,16 @@ app.use(
 				_id: String!
 				email: String!
 				password: String!
+				createdAt: String!
+				updatedAt: String!
 			}
 		
-			input UserInput {
+			input CreateUserInput {
+				email: String!
+				password: String!
+			}
+		
+			input UpdateUserInput {
 				email: String!
 				password: String!
 			}
@@ -28,7 +35,8 @@ app.use(
 			}
 
 			type RootMutation {
-				createUser(user: UserInput): User
+				createUser(input: CreateUserInput): User!
+				updateUser(input: UpdateUserInput): User!
 			}
 
 			schema {
@@ -40,12 +48,14 @@ app.use(
 			users: () => {
 				return users
 			},
-			createUser: ({ user }) => {
-				const { email, password } = user;
+			createUser: ({ input }) => {
+				const { email, password } = input;
 				const newUser = { 
-					_id: Math.random().toString(), 
-					email, 
-					password 
+					_id: Math.random().toString(),
+					email,
+					password,
+					createdAt: new Date(),
+					updatedAt: new Date()
 				}
 				users.push(newUser)
 				return newUser;
