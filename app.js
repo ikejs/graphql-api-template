@@ -61,6 +61,8 @@ app.use(
 			type RootMutation {
 				createUser(input: CreateUserInput): User!
 				updateUser(input: UpdateUserInput): User!
+				createPost(input: CreatePostInput): Post!
+				updatePost(input: UpdatePostInput): Post!
 			}
 
 			schema {
@@ -92,8 +94,8 @@ app.use(
 						_id: result.id 
 					}
 				}).catch(err => {
-					throw err
-				})
+					throw err;
+				});
 			},
 			updateUser: ({ input }) => {
 				// const { email, password } = input;
@@ -104,10 +106,29 @@ app.use(
 				return posts
 			},
 			createPost: ({ input }) => {
-				// const { title, message } = input;
-				// const newPost = { title }
-				// posts.push()
-				return null
+				const { title, message } = input;
+				const post = new Post({
+					...input,
+					author: "5f3d3464afecb3a585c46eb0"
+				});
+				let createdPost;
+				return post
+					.save()
+					.then(result => {
+						createdPost = { ...result._doc, _id: result._doc._id.toString() };
+						return User.findById('5f3d3464afecb3a585c46eb0')
+					}).then(user => {
+						if (!user) {
+							throw new Error('User not found.')
+						}
+						user.posts.push(post);
+						user.save();
+					}).then(result => {
+						return createdPost;
+					})
+					.catch(err => {
+						console.log(err);
+					})
 			}
 		},
 		graphiql: true
