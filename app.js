@@ -5,10 +5,12 @@ const { graphqlHTTP } = require('express-graphql');
 const { buildSchema } = require('graphql');
 const mongoose = require('mongoose');
 require('dotenv').config({ path: '.env' });
+const bcrypt = require('bcryptjs');
 
 app.use(bodyParser.json());
 
-const users = [];
+const User = require('./models/user');
+const Post = require('./models/post');
 
 app.use(
 	'/graphql',
@@ -17,7 +19,8 @@ app.use(
 			type User {
 				_id: String!
 				email: String!
-				password: String!
+				password: String
+				posts: [Post!]!
 				createdAt: String!
 				updatedAt: String!
 			}
@@ -30,6 +33,25 @@ app.use(
 			input UpdateUserInput {
 				email: String!
 				password: String!
+			}
+
+			type Post {
+				_id: String!
+				title: String!
+				message: String!
+				author: User!
+				createdAt: String!
+				updatedAt: String!
+			}
+		
+			input CreatePostInput {
+				title: String!
+				message: String!
+			}
+		
+			input UpdatePostInput {
+				title: String!
+				message: String!
 			}
 
 			type RootQuery {
@@ -52,15 +74,40 @@ app.use(
 			},
 			createUser: ({ input }) => {
 				const { email, password } = input;
-				const newUser = { 
-					_id: Math.random().toString(),
-					email,
-					password,
-					createdAt: new Date(),
-					updatedAt: new Date()
-				}
-				users.push(newUser)
-				return newUser;
+				return User.findOne({ email }).then(user => {
+					if (user) {
+						throw new Error('A user with that email address already exists.');
+					}
+					return bcrypt.hash(password, 12)
+				}).then(hashedPassword => {
+					const user = new User({
+						email: email,
+						password: hashedPassword
+					});
+					return user.save();
+				}).then(result => {
+					return { 
+						...result._doc, 
+						password: null, 
+						_id: result.id 
+					}
+				}).catch(err => {
+					throw err
+				})
+			},
+			updateUser: ({ input }) => {
+				// const { email, password } = input;
+				// find user and update email and pass...
+				return input
+			},
+			posts: () => {
+				return posts
+			},
+			createPost: ({ input }) => {
+				// const { title, message } = input;
+				// const newPost = { title }
+				// posts.push()
+				return null
 			}
 		},
 		graphiql: true
